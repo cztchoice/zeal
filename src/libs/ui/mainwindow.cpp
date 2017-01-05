@@ -300,6 +300,7 @@ MainWindow::MainWindow(Core::Application *app, QWidget *parent) :
     createTab();
 
     connect(ui->treeView, &QTreeView::clicked, this, &MainWindow::openDocset);
+    connect(ui->treeView, &QTreeView::doubleClicked, this, &MainWindow::quickLineEdit);
     connect(ui->tocListView, &QListView::clicked, this, &MainWindow::openDocset);
     connect(ui->treeView, &QTreeView::activated, this, &MainWindow::openDocset);
     connect(ui->tocListView, &QListView::activated, this, &MainWindow::openDocset);
@@ -466,6 +467,22 @@ void MainWindow::search(const Registry::SearchQuery &query)
 
     ui->lineEdit->setText(query.toString());
     emit ui->treeView->activated(ui->treeView->currentIndex());
+}
+
+void MainWindow::quickLineEdit(const QModelIndex &index)
+{
+    const QVariant keywordsVariant = index.data(Registry::ItemDataRole::DocsetKeywordRole);
+    if (keywordsVariant.isNull())
+        return;
+
+    QStringList keywords = keywordsVariant.toStringList();
+    if (keywords.size() < 1) {
+        return;
+    }
+
+    ui->lineEdit->setText(keywords.front() + QStringLiteral(":"));
+    ui->lineEdit->setFocus();
+    ui->lineEdit->selectQuery();
 }
 
 void MainWindow::openDocset(const QModelIndex &index)

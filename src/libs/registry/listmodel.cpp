@@ -104,6 +104,13 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
         if (index.parent().isValid())
             return QVariant();
         return m_docsetRegistry->docset(index.row())->name();
+    case ItemDataRole::DocsetKeywordRole:
+        switch (indexLevel(index)) {
+        case Level::DocsetLevel:
+            return m_docsetRegistry->docset(index.row())->keywords();
+        default:
+            return QVariant();
+        }
     case ItemDataRole::UpdateAvailableRole:
         if (index.parent().isValid())
             return QVariant();

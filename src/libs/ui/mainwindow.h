@@ -77,6 +77,7 @@ protected:
 private slots:
     void applySettings();
     void openDocset(const QModelIndex &index);
+    void quickLineEdit(const QModelIndex &index);
     void queryCompleted();
     void closeTab(int index = -1);
     void duplicateTab(int index);
