@@ -28,7 +28,7 @@
 #include <QStandardPaths>
 #include <QUrl>
 #include <QUuid>
-#include <QWebSettings>
+#include <QWebEngineSettings>
 
 namespace {
 // Configuration file groups
@@ -82,8 +82,8 @@ void Settings::load()
 
     settings->beginGroup(GroupContent);
     minimumFontSize = settings->value(QStringLiteral("minimum_font_size"),
-                                      QWebSettings::globalSettings()->fontSize(QWebSettings::MinimumFontSize)).toInt();
-    QWebSettings::globalSettings()->setFontSize(QWebSettings::MinimumFontSize, minimumFontSize);
+                                      QWebEngineSettings::globalSettings()->fontSize(QWebEngineSettings::MinimumFontSize)).toInt();
+    QWebEngineSettings::globalSettings()->setFontSize(QWebEngineSettings::MinimumFontSize, minimumFontSize);
 
     darkModeEnabled = settings->value(QStringLiteral("dark_mode"), false).toBool();
     highlightOnNavigateEnabled = settings->value(QStringLiteral("highlight_on_navigate"), true).toBool();

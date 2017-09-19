@@ -49,9 +49,10 @@
 #include <QSystemTrayIcon>
 #include <QTabBar>
 #include <QTimer>
-#include <QWebFrame>
-#include <QWebHistory>
-#include <QWebPage>
+#include <QWebEngineHistory>
+#include <QWebEnginePage>
+#include <QWebEngineSettings>
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
 
 using namespace Zeal;
 using namespace Zeal::WidgetUi;
@@ -73,9 +74,10 @@ struct TabState
         searchModel = new Registry::SearchModel();
         tocModel = new Registry::SearchModel();
 
-        webPage = new QWebPage();
-        webPage->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
-        webPage->setNetworkAccessManager(Core::Application::instance()->networkManager());
+        webPage = new QWebEnginePage();
+//        webPage->setLinkDelegationPolicy(QWebEnginePage::DelegateExternalLinks);
+//        webPage->setNetworkAccessManager(Core::Application::instance()->networkManager());
+
     }
 
     TabState(const TabState &other)
@@ -89,9 +91,9 @@ struct TabState
         searchModel = new Registry::SearchModel(*other.searchModel);
         tocModel = new Registry::SearchModel(*other.tocModel);
 
-        webPage = new QWebPage();
-        webPage->setLinkDelegationPolicy(QWebPage::DelegateExternalLinks);
-        webPage->setNetworkAccessManager(Core::Application::instance()->networkManager());
+        webPage = new QWebEnginePage();
+//        webPage->setLinkDelegationPolicy(QWebEnginePage::DelegateExternalLinks);
+//        webPage->setNetworkAccessManager(Core::Application::instance()->networkManager());
 
         restoreHistory(other.saveHistory());
     }
@@ -119,17 +121,17 @@ struct TabState
     }
 
     QUrl url() const {
-        return webPage->mainFrame()->url();
+        return webPage->url();
     }
 
     void loadUrl(const QUrl &url)
     {
-        webPage->mainFrame()->load(url);
+        webPage->load(url);
     }
 
     QString title() const
     {
-        return webPage->mainFrame()->title();
+        return webPage->title();
     }
 
     QString searchQuery;
@@ -144,7 +146,7 @@ struct TabState
     Registry::SearchModel *tocModel = nullptr;
     int tocScrollPosition = 0;
 
-    QWebPage *webPage = nullptr;
+    QWebEnginePage *webPage = nullptr;
     int webViewZoomFactor = 0;
 };
 
@@ -250,13 +252,13 @@ MainWindow::MainWindow(Core::Application *app, QWidget *parent) :
     m_backMenu = new QMenu(ui->backButton);
     connect(m_backMenu, &QMenu::aboutToShow, this, [this]() {
         m_backMenu->clear();
-        QWebHistory *history = currentTabState()->webPage->history();
-        QList<QWebHistoryItem> items = history->backItems(10);
+        QWebEngineHistory *history = currentTabState()->webPage->history();
+        QList<QWebEngineHistoryItem> items = history->backItems(10);
         // TODO: [Qt 5.6]
         //for (auto it = items.crbegin(); it != items.crend(); ++it) {
         for (auto it = items.cend() - 1; it >= items.cbegin(); --it) {
             const QIcon icon = docsetIcon(docsetName(it->url()));
-            const QWebHistoryItem item = *it;
+            const QWebEngineHistoryItem item = *it;
             // TODO: [Qt 5.6]
             // m_backMenu->addAction(icon, it->title(), [=](bool) { history->goToItem(item); });
             QAction *action = m_backMenu->addAction(icon, it->title());
@@ -269,8 +271,8 @@ MainWindow::MainWindow(Core::Application *app, QWidget *parent) :
     m_forwardMenu = new QMenu(ui->forwardButton);
     connect(m_forwardMenu, &QMenu::aboutToShow, this, [this]() {
         m_forwardMenu->clear();
-        QWebHistory *history = currentTabState()->webPage->history();
-        for (const QWebHistoryItem &item: history->forwardItems(10)) {
+        QWebEngineHistory *history = currentTabState()->webPage->history();
+        for (const QWebEngineHistoryItem &item: history->forwardItems(10)) {
             const QIcon icon = docsetIcon(docsetName(item.url()));
             // TODO: [Qt 5.6]
             //m_forwardMenu->addAction(icon, item.title(), [=](bool) { history->goToItem(item); });
@@ -845,7 +847,7 @@ void MainWindow::applySettings()
     }
 
     const QString cssUrl = QLatin1String("data:text/css;charset=utf-8;base64,") + ba.toBase64();
-    QWebSettings::globalSettings()->setUserStyleSheetUrl(QUrl(cssUrl));
+//    QWebEngineSettings::globalSettings()->setUserStyleSheetUrl(QUrl(cssUrl));
 }
 
 void MainWindow::toggleWindow()

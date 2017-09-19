@@ -29,7 +29,7 @@
 
 #include <QDir>
 #include <QFileDialog>
-#include <QWebSettings>
+#include <QWebEngineSettings>
 
 using namespace Zeal;
 using namespace Zeal::WidgetUi;
@@ -52,7 +52,7 @@ SettingsDialog::SettingsDialog(Core::Application *app, QWidget *parent) :
 
     connect(ui->minimumFontSizeSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
             this, [](int value) {
-        QWebSettings::globalSettings()->setFontSize(QWebSettings::MinimumFontSize, value);
+        QWebEngineSettings::globalSettings()->setFontSize(QWebEngineSettings::MinimumFontSize, value);
     });
 
     loadSettings();

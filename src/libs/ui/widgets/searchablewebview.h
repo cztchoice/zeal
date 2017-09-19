@@ -27,7 +27,7 @@
 #include <QWidget>
 
 class QLineEdit;
-class QWebPage;
+class QWebEnginePage;
 
 namespace Zeal {
 namespace WidgetUi {
@@ -43,10 +43,10 @@ public:
     void load(const QUrl &url);
     void focus();
     QSize sizeHint() const override;
-    QWebPage *page() const;
+    QWebEnginePage *page() const;
     bool canGoBack() const;
     bool canGoForward() const;
-    void setPage(QWebPage *page);
+    void setPage(QWebEnginePage *page);
 
     int zoomFactor() const;
     void setZoomFactor(int value);

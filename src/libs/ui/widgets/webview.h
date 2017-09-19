@@ -24,12 +24,13 @@
 #ifndef ZEAL_WIDGETUI_WEBVIEW_H
 #define ZEAL_WIDGETUI_WEBVIEW_H
 
-#include <QWebView>
+#include <QWebEngineView>
+#include <QWebEnginePage>
 
 namespace Zeal {
 namespace WidgetUi {
 
-class WebView : public QWebView
+class WebView : public QWebEngineView
 {
     Q_OBJECT
 public:
@@ -39,7 +40,7 @@ public:
     void setZealZoomFactor(int zf);
 
 protected:
-    QWebView *createWindow(QWebPage::WebWindowType type) override;
+    QWebEngineView *createWindow(QWebEnginePage::WebWindowType type) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;

@@ -29,9 +29,8 @@
 #include <QLineEdit>
 #include <QStyle>
 #include <QResizeEvent>
-#include <QWebFrame>
-#include <QWebHistory>
-#include <QWebPage>
+#include <QWebEngineHistory>
+#include <QWebEnginePage>
 
 using namespace Zeal::WidgetUi;
 
@@ -46,25 +45,23 @@ SearchableWebView::SearchableWebView(QWidget *parent) :
     m_searchLineEdit->installEventFilter(this);
     connect(m_searchLineEdit, &QLineEdit::textChanged, this, &SearchableWebView::find);
 
-    connect(m_webView, &QWebView::loadFinished, [&](bool ok) {
+    connect(m_webView, &QWebEngineView::loadFinished, [&](bool ok) {
         Q_UNUSED(ok)
         moveLineEdit();
     });
 
-    connect(m_webView, &QWebView::urlChanged, this, &SearchableWebView::urlChanged);
-    connect(m_webView, &QWebView::titleChanged, this, &SearchableWebView::titleChanged);
-    connect(m_webView, &QWebView::linkClicked, this, &SearchableWebView::linkClicked);
+    connect(m_webView, &QWebEngineView::urlChanged, this, &SearchableWebView::urlChanged);
+    connect(m_webView, &QWebEngineView::titleChanged, this, &SearchableWebView::titleChanged);
+//    connect(m_webView, &QWebEngineView::linkClicked, this, &SearchableWebView::linkClicked);
 }
 
-void SearchableWebView::setPage(QWebPage *page)
+void SearchableWebView::setPage(QWebEnginePage *page)
 {
     m_webView->setPage(page);
 
-    connect(page, &QWebPage::linkHovered, [&](const QString &link) {
-        if (link.startsWith(QLatin1String("file:")) || link.startsWith(QLatin1String("qrc:")))
-            return;
-
-        setToolTip(link);
+    connect(page, &QWebEnginePage::linkHovered, [&](const QString &link) {
+        if (!link.startsWith(QLatin1String("file:")) || link.startsWith(QLatin1String("qrc:")))
+            setToolTip(link);
     });
 }
 
@@ -114,7 +111,7 @@ void SearchableWebView::focus()
     m_webView->setFocus();
 }
 
-QWebPage *SearchableWebView::page() const
+QWebEnginePage *SearchableWebView::page() const
 {
     return m_webView->page();
 }
@@ -147,7 +144,7 @@ void SearchableWebView::showSearchBar()
 void SearchableWebView::hideSearchBar()
 {
     m_searchLineEdit->hide();
-    m_webView->findText(QString(), QWebPage::HighlightAllOccurrences);
+//    m_webView->findText(QString(), QWebEnginePage::HighlightAllOccurrences);
 }
 
 bool SearchableWebView::canGoBack() const
@@ -183,22 +180,24 @@ void SearchableWebView::resizeEvent(QResizeEvent *event)
 void SearchableWebView::find(const QString &text)
 {
     if (m_webView->selectedText() != text) {
-        m_webView->findText(QString(), QWebPage::HighlightAllOccurrences);
+//        m_webView->findText(QString(), QWebEnginePage::HighlightAllOccurrences);
         m_webView->findText(QString());
         if (text.isEmpty())
             return;
 
-        m_webView->findText(text, QWebPage::FindWrapsAroundDocument);
+//        m_webView->findText(text, QWebEnginePage::FindWrapsAroundDocument);
     }
 
-    m_webView->findText(text, QWebPage::HighlightAllOccurrences);
+//    m_webView->findText(text, QWebEnginePage::HighlightAllOccurrences);
 }
 
 void SearchableWebView::findNext(const QString &text, bool backward)
 {
-    QWebPage::FindFlags flags = QWebPage::FindWrapsAroundDocument;
+//    QWebEnginePage::FindFlags flags = QWebEnginePage::FindWrapsAroundDocument;
+    QWebEnginePage::FindFlags flags = 0;
+
     if (backward)
-        flags |= QWebPage::FindBackward;
+        flags |= QWebEnginePage::FindBackward;
 
     m_webView->findText(text, flags);
 }
@@ -206,7 +205,7 @@ void SearchableWebView::findNext(const QString &text, bool backward)
 void SearchableWebView::moveLineEdit()
 {
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-    frameWidth += m_webView->page()->currentFrame()->scrollBarGeometry(Qt::Vertical).width();
+//    frameWidth += m_webView->page()->scrollBarGeometry(Qt::Vertical).width();
 
     m_searchLineEdit->move(rect().right() - frameWidth - m_searchLineEdit->sizeHint().width(), rect().top());
     m_searchLineEdit->raise();

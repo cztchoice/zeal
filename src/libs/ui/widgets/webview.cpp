@@ -26,13 +26,12 @@
 #include "../mainwindow.h"
 
 #include <QApplication>
-#include <QWebFrame>
 #include <QWheelEvent>
 
 using namespace Zeal::WidgetUi;
 
 WebView::WebView(QWidget *parent) :
-    QWebView(parent)
+    QWebEngineView(parent)
 {
 }
 
@@ -47,7 +46,7 @@ void WebView::setZealZoomFactor(int zf)
     updateZoomFactor();
 }
 
-QWebView *WebView::createWindow(QWebPage::WebWindowType type)
+QWebEngineView *WebView::createWindow(QWebEnginePage::WebWindowType type)
 {
     Q_UNUSED(type)
 
@@ -79,7 +78,7 @@ void WebView::mousePressEvent(QMouseEvent *event)
         break;
     }
 
-    QWebView::mousePressEvent(event);
+    QWebEngineView::mousePressEvent(event);
 }
 
 void WebView::mouseReleaseEvent(QMouseEvent *event)
@@ -89,16 +88,16 @@ void WebView::mouseReleaseEvent(QMouseEvent *event)
         if (!(event->modifiers() & Qt::ControlModifier || event->modifiers() & Qt::ShiftModifier))
             break;
     case Qt::MiddleButton:
-        if (m_clickedLink == clickedLink(event->pos()) && m_clickedLink.isValid()) {
-            QWebView *webView = createWindow(QWebPage::WebBrowserWindow);
-            webView->load(m_clickedLink);
-            event->accept();
-        }
+//        if (m_clickedLink == clickedLink(event->pos()) && m_clickedLink.isValid()) {
+//            QWebEngineView *webView = createWindow(QWebEnginePage::WebBrowserWindow);
+//            webView->load(m_clickedLink);
+//            event->accept();
+//        }
         break;
     default:
         break;
     }
-    QWebView::mouseReleaseEvent(event);
+    QWebEngineView::mouseReleaseEvent(event);
 }
 
 void WebView::wheelEvent(QWheelEvent *event)
@@ -107,17 +106,18 @@ void WebView::wheelEvent(QWheelEvent *event)
         m_zoomFactor += event->delta() / 120;
         updateZoomFactor();
     } else {
-        QWebView::wheelEvent(event);
+        QWebEngineView::wheelEvent(event);
     }
 }
 
 QUrl WebView::clickedLink(const QPoint &pos) const
 {
-    QWebFrame *frame = page()->frameAt(pos);
-    if (!frame)
-        return QUrl();
+//    QWebEngineFrame *frame = page()->frameAt(pos);
+//    if (!frame)
+//        return QUrl();
 
-    return frame->hitTestContent(pos).linkUrl();
+//    return frame->hitTestContent(pos).linkUrl();
+    return QUrl();
 }
 
 void WebView::updateZoomFactor()
